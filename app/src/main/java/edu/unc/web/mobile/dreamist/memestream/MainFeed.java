@@ -81,6 +81,11 @@ public class MainFeed extends AppCompatActivity {
                                     "Login failed.",
                                     Toast.LENGTH_SHORT)
                                     .show();
+                            try {
+                                task.getException().printStackTrace();
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 });
@@ -103,6 +108,11 @@ public class MainFeed extends AppCompatActivity {
                             Toast.makeText(MainFeed.this,
                                     "Login failure", Toast.LENGTH_SHORT)
                                     .show();
+                            try {
+                                task.getException().printStackTrace();
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 });
