@@ -67,6 +67,10 @@ public class MainFeed extends AppCompatActivity {
         String email_str = email_input.getText().toString();
         String password_str = password_input.getText().toString();
 
+        if (email_str.isEmpty() || password_str.isEmpty()) {
+            return;
+        }
+
         mAuth.createUserWithEmailAndPassword(email_str, password_str)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
