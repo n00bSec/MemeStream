@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -28,7 +30,7 @@ public class MainFeed extends AppCompatActivity {
     EditText email_input, password_input;
 
     private FirebaseAuth mAuth;
-    private LinearLayoutCompat social_feed;
+    private RecyclerView social_feed;
     private LinearLayoutCompat login_details;
 
     @Override
@@ -41,6 +43,11 @@ public class MainFeed extends AppCompatActivity {
         social_feed = findViewById(R.id.social_feed);
         email_input = findViewById(R.id.email);
         password_input = findViewById(R.id.password);
+
+        LinearLayoutManager llmanager = new LinearLayoutManager(this);
+        social_feed.setHasFixedSize(true);
+        llmanager.setStackFromEnd(true);
+        social_feed.setLayoutManager(llmanager);
 
         mAuth = FirebaseAuth.getInstance();
         login_details = findViewById(R.id.login_details);
@@ -124,9 +131,16 @@ public class MainFeed extends AppCompatActivity {
 
     protected void initFeed(FirebaseUser user){
         login_details.setVisibility(View.GONE);
-        toolbar.setTitle("Memer:" + user.getUid());
+        toolbar.setTitle("Meme, " + user.getUid().substring(0, 4) + "!");
+        Log.d(TAG, "Toolbar set?");
         setSupportActionBar(toolbar);
+    }
 
+    protected void logout() {
+        mAuth.signOut();
+        login_details.setVisibility(View.VISIBLE);
+        toolbar.setTitle("Y U NO LOG'N?");
+        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -147,6 +161,18 @@ public class MainFeed extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-        return super.onOptionsItemSelected(item);
+
+        switch (id) {
+            case R.id.logout:
+                if (mAuth.getCurrentUser() != null) { //Already logged out
+                    Log.d(TAG, "Logging out...");
+                    logout();
+                } else {
+                    Log.i(TAG, "User already signed out.");
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

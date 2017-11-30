@@ -94,4 +94,6 @@
     <string name="register">REGISTER</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
+    <string name="logout">Logout</string>
+    <string name="give_a_meme">GIVE A MEME</string>
 </resources>
