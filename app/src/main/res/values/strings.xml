@@ -96,4 +96,9 @@
     <string name="email">Email</string>
     <string name="logout">Logout</string>
     <string name="give_a_meme">GIVE A MEME</string>
+    <string name="profile">Profile</string>
+    <string name="user_profile">User Profile</string>
+    <string name="profile_image_url">Profile Image URL</string>
+    <string name="update_profile">Update Profile</string>
+    <string name="profile_image_name">Profile Image Name</string>
 </resources>

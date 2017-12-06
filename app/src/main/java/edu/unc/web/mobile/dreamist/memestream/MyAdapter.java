@@ -7,10 +7,6 @@ import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 
-/**
- * Created by dreamist on 12/5/17.
- */
-
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 	DatabaseReference postdb;
 

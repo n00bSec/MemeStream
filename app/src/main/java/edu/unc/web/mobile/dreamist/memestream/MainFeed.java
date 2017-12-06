@@ -155,7 +155,11 @@ public class MainFeed extends AppCompatActivity {
 
     protected void initFeed(FirebaseUser user){
         login_details.setVisibility(View.GONE);
-        toolbar.setTitle("Meme, " + user.getUid().substring(0, 4) + "!");
+        if (user.getDisplayName().isEmpty()) {
+            toolbar.setTitle("Padawan #" + user.getUid().substring(0, 4) + "!");
+        } else {
+            toolbar.setTitle("Mememaster " + user.getDisplayName());
+        }
         Log.d(TAG, "Toolbar set?");
         setSupportActionBar(toolbar);
     }
@@ -256,6 +260,9 @@ public class MainFeed extends AppCompatActivity {
                     Log.i(TAG, "User already signed out.");
                 }
                 return true;
+            case R.id.profile:
+                Intent i = new Intent(this, ProfileActivity.class);
+                startActivity(i);
             default:
                 return super.onOptionsItemSelected(item);
         }
