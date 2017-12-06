@@ -6,14 +6,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by dreamist on 12/5/17.
  */
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-	FirebaseDatabase postdb;
+	DatabaseReference postdb;
 
 	public static class ViewHolder extends RecyclerView.ViewHolder{
 		public TextView mTextView;
@@ -23,7 +22,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 		}
 	}
 
-	public MyAdapter(FirebaseDatabase postdbinstance){
+	public MyAdapter(DatabaseReference postdbinstance) {
 		postdb = postdbinstance;
 	}
 
@@ -38,7 +37,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
-		DatabaseReference dbref = postdb.getReference("posts");
+		DatabaseReference dbref = postdb;
 		holder.mTextView.setText("" + position + "out of " + 4 + " Memes!");
 	}
 

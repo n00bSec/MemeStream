@@ -26,6 +26,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -33,7 +35,6 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class MainFeed extends AppCompatActivity {
 
@@ -47,7 +48,7 @@ public class MainFeed extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseStorage mStore;
-    private FirebaseDatabase postdb;
+    private DatabaseReference postdb;
     private RecyclerView social_feed;
     private LinearLayoutCompat login_details;
 
@@ -70,7 +71,7 @@ public class MainFeed extends AppCompatActivity {
         mStore = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
         login_details = findViewById(R.id.login_details);
-        postdb = FirebaseDatabase.getInstance();
+        postdb = FirebaseDatabase.getInstance().getReference("posts");
         MyAdapter adapter = new MyAdapter(postdb);
         social_feed.setAdapter(adapter);
 
@@ -212,6 +213,11 @@ public class MainFeed extends AppCompatActivity {
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             Uri downloadUrl = taskSnapshot.getDownloadUrl();
                             Log.d(TAG, "Download it from:" + downloadUrl);
+                            Log.d(TAG, "Posting to name:" +
+                                    taskSnapshot.getMetadata().getName()
+                                            .replaceAll("[^\\w]", ""));
+                            postdb.child(taskSnapshot.getMetadata().getName()
+                                    .replaceAll("[^\\w]", "")).setValue(downloadUrl.toString());
                         }
                     });
 
