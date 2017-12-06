@@ -1,6 +1,10 @@
 package edu.unc.web.mobile.dreamist.memestream;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,20 +20,32 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Date;
 
 public class MainFeed extends AppCompatActivity {
 
     private final String TAG = "MEMESTREAM";
+
+    private final int GET_IMG_RESULT = 1;
 
     private Toolbar toolbar;
 
     EditText email_input, password_input;
 
     private FirebaseAuth mAuth;
+    private FirebaseStorage mStore;
     private RecyclerView social_feed;
     private LinearLayoutCompat login_details;
 
@@ -49,6 +65,7 @@ public class MainFeed extends AppCompatActivity {
         llmanager.setStackFromEnd(true);
         social_feed.setLayoutManager(llmanager);
 
+        mStore = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
         login_details = findViewById(R.id.login_details);
     }
@@ -141,6 +158,62 @@ public class MainFeed extends AppCompatActivity {
         login_details.setVisibility(View.VISIBLE);
         toolbar.setTitle("Y U NO LOG'N?");
         setSupportActionBar(toolbar);
+    }
+
+    public void giveMeme(View v) {
+        if (mAuth.getCurrentUser() == null) {
+            Log.w(TAG, "User isn't logged in.");
+            Toast.makeText(this, "Y U NO LOG'N 1st?", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //Get a photo and upload
+        Intent getPhotoIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        getPhotoIntent.setType("image/*");
+        startActivityForResult(getPhotoIntent, GET_IMG_RESULT);
+
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GET_IMG_RESULT) { //asked for an image
+            if (resultCode == RESULT_OK && data != null) {
+                //We've got our image.
+                Uri imageUri = data.getData();
+                Log.d(TAG, "We're all good with getting the URI, "
+                        + imageUri);
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),
+                            imageUri);
+                    Log.d(TAG, "Loaded bitmap into memory.");
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] bitmap_data = baos.toByteArray();
+
+                    StorageReference storageRef = mStore.getReference();
+                    StorageReference meme = storageRef.child("meme" + (new Date()).getTime()
+                            + ".jpg");
+                    Log.d(TAG, "Created StorageReference:" + storageRef.getPath());
+
+                    UploadTask uploadTask = meme.putBytes(bitmap_data);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                            Log.d(TAG, "Download it from:" + downloadUrl);
+                        }
+                    });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
