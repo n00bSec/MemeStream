@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainFeed extends AppCompatActivity {
 
@@ -30,6 +31,7 @@ public class MainFeed extends AppCompatActivity {
     EditText email_input, password_input;
 
     private FirebaseAuth mAuth;
+    private FirebaseDatabase postdb;
     private RecyclerView social_feed;
     private LinearLayoutCompat login_details;
 
@@ -51,6 +53,10 @@ public class MainFeed extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         login_details = findViewById(R.id.login_details);
+        postdb = FirebaseDatabase.getInstance();
+        MyAdapter adapter = new MyAdapter(postdb);
+        social_feed.setAdapter(adapter);
+
     }
 
     protected void onStart(){
