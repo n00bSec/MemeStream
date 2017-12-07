@@ -72,7 +72,7 @@ public class MainFeed extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         login_details = findViewById(R.id.login_details);
         postdb = FirebaseDatabase.getInstance().getReference("posts");
-        MyAdapter adapter = new MyAdapter(postdb);
+        MyAdapter adapter = new MyAdapter(postdb, this);
         social_feed.setAdapter(adapter);
 
     }
